@@ -3,18 +3,14 @@ using System.Collections;
 using UnityEngine.UI;
 using PlayFab;
 using PlayFab.ClientModels;
+using UnityEngine.SceneManagement;
 
 public class PlayFabManager : MonoBehaviour {
 
-	public string PlayFabId;
-	public Button loginButton, registerButton;
 	public InputField username, password, email;
 	InputField usr, pass, ema;
-	Button btn, regBtn;
 
 	void Start () {
-		btn = loginButton.GetComponent<Button>();
-		regBtn = registerButton.GetComponent<Button>();
 		usr = username.GetComponent<InputField>();
 		pass = password.GetComponent<InputField>();
 		ema = email.GetComponent<InputField>();
@@ -22,10 +18,14 @@ public class PlayFabManager : MonoBehaviour {
 
 	public void TaskOnClickLogin() {
 		Login (usr.text, pass.text);
+		Globals.username = usr.text;
+		Globals.password = pass.text;
 	}
 
 	public void TaskOnClickRegister() {
 		Register (usr.text, pass.text, ema.text);
+		Globals.username = usr.text;
+		Globals.password = pass.text;
 	}
 
 	void Register(string usr, string pass, string ema) {
@@ -38,8 +38,8 @@ public class PlayFabManager : MonoBehaviour {
 		};
 
 		PlayFabClientAPI.RegisterPlayFabUser(request, (result) => {
-			PlayFabId = result.PlayFabId;
-			Debug.Log("Got PlayFabID: " + PlayFabId);
+			Globals.PlayFabId = result.PlayFabId;
+			Debug.Log("Got PlayFabID: " + Globals.PlayFabId);
 		},
 			(error) => {
 				Debug.Log("Error logging in player with username:");
@@ -57,8 +57,8 @@ public class PlayFabManager : MonoBehaviour {
 		};
 
 		PlayFabClientAPI.LoginWithPlayFab(request, (result) => {
-			PlayFabId = result.PlayFabId;
-			Debug.Log("Got PlayFabID: " + PlayFabId);
+			Globals.PlayFabId = result.PlayFabId;
+			Debug.Log("Got PlayFabID: " + Globals.PlayFabId);
 
 			if(result.NewlyCreated)
 			{
@@ -68,13 +68,18 @@ public class PlayFabManager : MonoBehaviour {
 			{
 				Debug.Log("(existing account)");
 			}
+			LoadScene();
 		},
 			(error) => {
 				Debug.Log("Error logging in player with username:");
 				Debug.Log(error.ErrorMessage);
 			});
 	}
-	
+
+	void LoadScene() {
+		SceneManager.LoadScene ("Menu", LoadSceneMode.Single);
+	}
+
 	// Update is called once per frame
 	void Update () {
 	
