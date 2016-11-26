@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 /// <summary>
 /// This class is a simple example of how to build a controller that interacts with PlatformerMotor2D.
 /// </summary>
 [RequireComponent(typeof(PlatformerMotor2D))]
-public class PlayerController2D : MonoBehaviour
+public class PlayerController2D : NetworkBehaviour
 {
     private PlatformerMotor2D _motor;
     private bool _restored = true;
@@ -15,7 +16,18 @@ public class PlayerController2D : MonoBehaviour
     void Start()
     {
         _motor = GetComponent<PlatformerMotor2D>();
+
+		if (isLocalPlayer) { //if I am the owner of this prefab
+			GameObject.Find ("Main Camera").GetComponent<CameraFollow> ().target = transform;
+			Debug.Log ("New object instanted by me");
+		}
     }
+
+	//Function only affects the local network player and what they can see
+	public override void OnStartLocalPlayer()
+	{
+
+	}
 
     // before enter en freedom state for ladders
     void FreedomStateSave(PlatformerMotor2D motor)
@@ -41,6 +53,8 @@ public class PlayerController2D : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+		if (!isLocalPlayer)
+			return;
         // use last state to restore some ladder specific values
         if (_motor.motorState != PlatformerMotor2D.MotorState.FreedomState)
         {
