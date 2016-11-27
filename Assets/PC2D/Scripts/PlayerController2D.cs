@@ -11,6 +11,8 @@ public class PlayerController2D : NetworkBehaviour
     private bool _restored = true;
     private bool _enableOneWayPlatforms;
     private bool _oneWayPlatformsAreWalls;
+	public GameObject bulletPrefab;
+	public Transform bulletSpawn;
 
     // Use this for initialization
     void Start()
@@ -50,17 +52,54 @@ public class PlayerController2D : NetworkBehaviour
         _motor.oneWayPlatformsAreWalls = _oneWayPlatformsAreWalls;
     }
 
+	[Command]
+	void CmdFire(int direction)
+	{
+		// Create the Bullet from the Bullet Prefab
+		var bullet = (GameObject)Instantiate(
+			bulletPrefab,
+			bulletSpawn.position,
+			bulletSpawn.rotation);
+
+		// Spawn the bullet on the Clients
+		NetworkServer.Spawn(bullet);
+
+		// Add velocity to the bullet
+		bullet.GetComponent<Rigidbody2D>().AddForce(bullet.transform.right * 1000 * direction);
+
+		// Destroy the bullet after 2 seconds
+		Destroy(bullet, 2.0f);        
+	}
+
     // Update is called once per frame
     void Update()
     {
 		if (!isLocalPlayer)
 			return;
+
+		int direction = 1;
         // use last state to restore some ladder specific values
+
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
+		{
+			direction = -1;
+		}
+
+		if (Input.GetKeyDown(KeyCode.RightArrow))
+		{
+			direction = 1;
+		}
+
         if (_motor.motorState != PlatformerMotor2D.MotorState.FreedomState)
         {
             // try to restore, sometimes states are a bit messy because change too much in one frame
             FreedomStateRestore(_motor);
         }
+
+		if (Input.GetKeyDown(KeyCode.LeftShift))
+		{
+			CmdFire(direction);
+		}
 
         // Jump?
         // If you want to jump in ladders, leave it here, otherwise move it down
