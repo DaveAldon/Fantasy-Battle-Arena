@@ -1,19 +1,32 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 
-public class Shooting : NetworkBehaviour {
+public class Shooting : NetworkBehaviour
+{
+	public int m_PlayerNumber = 1;            // Used to identify the different players.
+	public Rigidbody2D m_Shell;                 // Prefab of the shell.
+	public Transform m_FireTransform;         // A child of the tank where the shells are spawned.
+	private float m_CurrentLaunchForce = 10f;
+	private float direction = 1;
 
-	public GameObject bulletPrefab;
-	public Transform bulletSpawn;
-	private int direction = 1;
-	
-	// Update is called once per frame
-	void Update () {
+	[SyncVar]
+	public int m_localID;
+
+	private Rigidbody2D m_Rigidbody2D;          // Reference to the rigidbody component.
+
+	private void Awake()
+	{
+		// Set up the references.
+		m_Rigidbody2D = GetComponent<Rigidbody2D>();
+	}
+
+	[ClientCallback]
+	private void Update()
+	{
 		if (!isLocalPlayer)
-		{
 			return;
-		}
+		
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
 		{
 			direction = -1;
@@ -23,30 +36,31 @@ public class Shooting : NetworkBehaviour {
 		{
 			direction = 1;
 		}
-
-		if (Input.GetKeyDown(KeyCode.LeftShift))
+		else if (Input.GetKeyDown(KeyCode.LeftShift))
 		{
-			CmdFire(direction);
+			// ... launch the shell.
+			Fire();
 		}
 	}
 
-	[Command]
-	void CmdFire(int direction)
+	private void Fire()
 	{
-		// Create the Bullet from the Bullet Prefab
-		var bullet = (GameObject)Instantiate(
-			bulletPrefab,
-			bulletSpawn.position,
-			bulletSpawn.rotation);
+		CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_FireTransform.right, m_FireTransform.position, m_FireTransform.rotation);
+	}
 
-		// Add velocity to the bullet
-		//bullet.GetComponent<Rigidbody2D>().AddForce(bullet.transform.right * 1000 * direction);
-		bullet.GetComponent<Rigidbody2D>().velocity = bullet.transform.right * 6 * direction;
+	[Command]
+	private void CmdFire(Vector2 rigidbodyVelocity, float launchForce, Vector2 right, Vector2 position, Quaternion rotation)
+	{
+		// Create an instance of the shell and store a reference to it's rigidbody.
+		Rigidbody2D shellInstance =
+			Instantiate(m_Shell, position, rotation) as Rigidbody2D;
 
-		// Spawn the bullet on the Clients
-		NetworkServer.Spawn (bullet);
+		// Create a velocity that is the tank's velocity and the launch force in the fire position's forward direction.
+		Vector2 velocity = rigidbodyVelocity + launchForce * right * direction;
 
-		// Destroy the bullet after 2 seconds
-		Destroy(bullet, 2.0f);        
+		// Set the shell's velocity to this velocity.
+		shellInstance.velocity = velocity;
+
+		NetworkServer.Spawn(shellInstance.gameObject);
 	}
 }
