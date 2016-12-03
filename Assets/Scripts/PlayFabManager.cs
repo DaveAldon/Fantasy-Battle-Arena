@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 using PlayFab;
 using PlayFab.ClientModels;
@@ -30,7 +29,7 @@ public class PlayFabManager : MonoBehaviour {
 
 	void Register(string usr, string pass, string ema) {
 		RegisterPlayFabUserRequest request = new RegisterPlayFabUserRequest () {
-			TitleId = PlayFabSettings.TitleId,
+			TitleId = "CB46", //PlayFabSettings.TitleId,
 			Username = usr,
 			DisplayName = usr,
 			Password = pass,

@@ -65,7 +65,7 @@ public class PlatformerMotor2D : MonoBehaviour
     /// How much time does it take for the motor to get from zero speed to max speed. This value
     /// is used to calculate the acceleration.
     /// </summary>
-    public float timeToGroundSpeed = 0.1f;
+    public float timeToGroundSpeed = 0.4f;
 
     /// <summary>
     /// The distance the motor will slide to a stop from full speed while on the ground.
@@ -87,7 +87,7 @@ public class PlatformerMotor2D : MonoBehaviour
     /// The time it takes to move from zero horizontal speed to the maximum speed. This value is
     /// used to calculate the acceleration.
     /// </summary>
-    public float timeToAirSpeed = 0.2f;
+    public float timeToAirSpeed = 0.1f;
 
     /// <summary>
     /// The distance the motor will 'slide' to a stop while in the air. Only effects horizontal
@@ -134,7 +134,7 @@ public class PlatformerMotor2D : MonoBehaviour
     /// <summary>
     /// Number of air jumps allowed.
     /// </summary>
-    public int numOfAirJumps = 1;
+    public int numOfAirJumps = 3;
 
     /// <summary>
     /// The amount of time once the motor has left an environment that a jump will be allowed.
@@ -279,7 +279,7 @@ public class PlatformerMotor2D : MonoBehaviour
     /// <summary>
     /// Is dashing allowed?
     /// </summary>
-    public bool enableDashes = true;
+    public bool enableDashes = false;
 
     /// <summary>
     /// How far the motor will dash.
