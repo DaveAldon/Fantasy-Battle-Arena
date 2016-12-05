@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 
 namespace PC2D
 {
@@ -31,7 +32,7 @@ namespace PC2D
         // Update is called once per frame
         void Update()
         {
-            if (_motor.motorState == PlatformerMotor2D.MotorState.Jumping ||
+          if (_motor.motorState == PlatformerMotor2D.MotorState.Jumping ||
                 _isJumping &&
                     (_motor.motorState == PlatformerMotor2D.MotorState.Falling ||
                                  _motor.motorState == PlatformerMotor2D.MotorState.FallingFast))

@@ -5,7 +5,8 @@ public class Shooting : NetworkBehaviour
 {
 	public int m_PlayerNumber = 1;            // Used to identify the different players.
 	public Rigidbody2D m_Shell;                 // Prefab of the shell.
-	public Transform m_FireTransform;         // A child of the tank where the shells are spawned.
+	public Transform m_LeftFireTransform;         // A child of the player where the bullets are spawned.
+	public Transform m_RightFireTransform;
 	private float m_CurrentLaunchForce = 10f;
 	private float direction = 1;
 
@@ -20,18 +21,20 @@ public class Shooting : NetworkBehaviour
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
 	}
 
+	
+
 	[ClientCallback]
 	private void Update()
 	{
 		if (!isLocalPlayer)
 			return;
-		
-		if (Input.GetKeyDown(KeyCode.LeftArrow))
+
+		if (Input.GetKeyDown(KeyCode.LeftArrow) || (Input.GetKeyDown(KeyCode.A)))
 		{
 			direction = -1;
 		}
 
-		if (Input.GetKeyDown(KeyCode.RightArrow))
+		if (Input.GetKeyDown(KeyCode.RightArrow) || (Input.GetKeyDown(KeyCode.D)))
 		{
 			direction = 1;
 		}
@@ -44,7 +47,12 @@ public class Shooting : NetworkBehaviour
 
 	private void Fire()
 	{
-		CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_FireTransform.right, m_FireTransform.position, m_FireTransform.rotation);
+		if(direction == 1) {
+			CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_LeftFireTransform.right, m_LeftFireTransform.position, m_LeftFireTransform.rotation);
+		}
+		else {
+			CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_RightFireTransform.right, m_RightFireTransform.position, m_RightFireTransform.rotation);
+		}
 	}
 
 	[Command]
