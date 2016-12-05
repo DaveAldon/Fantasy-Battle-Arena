@@ -21,8 +21,6 @@ public class Shooting : NetworkBehaviour
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
 	}
 
-	
-
 	[ClientCallback]
 	private void Update()
 	{
