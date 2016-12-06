@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Networking;
 
 namespace PC2D
 {
@@ -9,7 +10,7 @@ namespace PC2D
     /// will need to be written to suit your game's needs.
     /// </summary>
 
-    public class PlatformerAnimation2D : MonoBehaviour
+    public class PlatformerAnimation2D : NetworkBehaviour
     {
         public float jumpRotationSpeed;
         public GameObject visualChild;
@@ -32,6 +33,7 @@ namespace PC2D
         // Update is called once per frame
         void Update()
         {
+           //if(!isLocalPlayer) {return;} 
           if (_motor.motorState == PlatformerMotor2D.MotorState.Jumping ||
                 _isJumping &&
                     (_motor.motorState == PlatformerMotor2D.MotorState.Falling ||
@@ -81,7 +83,7 @@ namespace PC2D
                 }
                 else
                 {
-                    if (_motor.velocity.sqrMagnitude >= 0.1f * 0.1f)
+                    if (_motor.velocity.x != 0)
                     {
                         _animator.Play("Walk");
                     }
