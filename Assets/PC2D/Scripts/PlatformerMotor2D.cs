@@ -922,7 +922,7 @@ public class PlatformerMotor2D : MonoBehaviour
     //
     // Quering motor
     //
-
+  
     ///<summary>
     /// Is the motor Dashing?
     ///</summary>
