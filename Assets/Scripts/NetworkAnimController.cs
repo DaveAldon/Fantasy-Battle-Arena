@@ -5,7 +5,7 @@ using UnityEngine;
 public class NetworkAnimController : MonoBehaviour {
 	public float V;
 	public float H;
-	public NetworkAnimStates States;
+	//public NetworkAnimStates States;
 	// Use this for initialization
 	void Start () {
 		
@@ -15,7 +15,7 @@ public class NetworkAnimController : MonoBehaviour {
 	void Update () {
 		V = Mathf.Abs(Input.GetAxis(PC2D.Input.HORIZONTAL));
 		H = Mathf.Abs(Input.GetAxis(PC2D.Input.VERTICAL));
-
+/*
 		if(V < 0) {
 			States.SyncAnimation("Walk");
 		}
@@ -23,5 +23,6 @@ public class NetworkAnimController : MonoBehaviour {
 			States.SyncAnimation("Walk");
 		}
 		else States.SyncAnimation("Idle");
+	*/
 	}
 }

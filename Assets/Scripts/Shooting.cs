@@ -3,12 +3,12 @@ using UnityEngine.Networking;
 
 public class Shooting : NetworkBehaviour
 {
+	public int team;
 	public int m_PlayerNumber = 1;            // Used to identify the different players.
 	public Rigidbody2D m_Shell;                 // Prefab of the shell.
-	public Transform m_LeftFireTransform;         // A child of the player where the bullets are spawned.
-	public Transform m_RightFireTransform;
-	private float m_CurrentLaunchForce = 10f;
-	private float direction = 1;
+	public Transform m_FireTransform;         // A child of the player where the bullets are spawned.
+	private float m_CurrentLaunchForce = 15f;
+	public float direction = 1;
 
 	[SyncVar]
 	public int m_localID;
@@ -45,12 +45,7 @@ public class Shooting : NetworkBehaviour
 
 	private void Fire()
 	{
-		if(direction == 1) {
-			CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_LeftFireTransform.right, m_LeftFireTransform.position, m_LeftFireTransform.rotation);
-		}
-		else {
-			CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_RightFireTransform.right, m_RightFireTransform.position, m_RightFireTransform.rotation);
-		}
+		CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_FireTransform.right, m_FireTransform.position, m_FireTransform.rotation);
 	}
 
 	[Command]
@@ -59,6 +54,8 @@ public class Shooting : NetworkBehaviour
 		// Create an instance of the shell and store a reference to it's rigidbody.
 		Rigidbody2D shellInstance =
 			Instantiate(m_Shell, position, rotation) as Rigidbody2D;
+			
+			shellInstance.GetComponent<Bullet>().ownerTeam = team;
 
 		// Create a velocity that is the tank's velocity and the launch force in the fire position's forward direction.
 		Vector2 velocity = rigidbodyVelocity + launchForce * right * direction;
