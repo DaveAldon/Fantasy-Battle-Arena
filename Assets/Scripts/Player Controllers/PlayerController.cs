@@ -12,7 +12,11 @@ using UnityEngine.Networking;
 	  
      // Use this for initialization
      void Start () {
-         anim = gameObject.GetComponent<Animator> ();
+        anim = gameObject.GetComponent<Animator> ();
+
+		if (isLocalPlayer) { //if I am the owner of this prefab
+		Camera.main.GetComponent<CameraFollow>().target = transform;
+    	}
      }
 
 	private void Update()
