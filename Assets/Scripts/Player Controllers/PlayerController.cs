@@ -7,9 +7,6 @@ using UnityEngine.Networking;
      public Animator anim;
 	 private int currentState = 0;
 	 public int direction;
-	 public bool isLeft;
-	 public bool isRight;
-	 public bool isIdle;
 	 public bool lastFacedLeft;
      private bool m_Jump;   
 	  
@@ -36,37 +33,29 @@ using UnityEngine.Networking;
 
 	private void FixedUpdate() {
 		if(isLocalPlayer) {
-
-			if(Input.GetKey(KeyCode.A)) {
-				direction = -1;
-				currentState = 1;
-				isLeft = true;
-				isRight = false;
-				isIdle = false;
-				lastFacedLeft = true;
-			}
-			if(Input.GetKey(KeyCode.D)) {
-				GetComponent<SpriteRenderer>().flipX = false;
-				direction = 1;
-				currentState = 2;
-				isLeft = false;
-				isRight = true;
-				isIdle = false;
-				lastFacedLeft = false;
-			}
-			if(Input.GetKey(KeyCode.Space)) {
-				currentState = 3;
-			}
 			if((Input.GetKey(KeyCode.A) == false) && (Input.GetKey(KeyCode.D) == false)) {
 				direction = 0;
-				currentState = 0;
-				isIdle = true;
-				isLeft = false;
-				isRight = false;
+				if(lastFacedLeft) {
+					currentState = 0;
+				} else {
+					currentState = 1;
+				}
+			}
+			else if(Input.GetKey(KeyCode.A)) {
+				direction = -1;
+				currentState = 2;
+				lastFacedLeft = true;
+			}
+			else if(Input.GetKey(KeyCode.D)) {
+				direction = 1;
+				currentState = 3;
+				lastFacedLeft = false;
+			}
+			else if(Input.GetKey(KeyCode.Space)) {
+				currentState = 3;
 			}
 
        		CmdSpriteChange(currentState);
-    		SpriteChange(currentState);
 
 			m_Jump = false;
 
@@ -111,33 +100,17 @@ using UnityEngine.Networking;
 	{
 		if (sprite == 0)
 		{
-			if(lastFacedLeft) {
 			anim.Play("IdleLeft");
-			} else anim.Play("Idle");
 		}
 		else if (sprite == 1)
 		{
-			anim.Play("WalkLeft");
+			anim.Play("Idle");
 		}
 		else if (sprite == 2)
 		{
-			anim.Play("Walk");
-		}
-	}
-
-	void SpriteChange(int sprite)
-	{
-		if (sprite == 0)
-		{
-			if(lastFacedLeft) {
-			anim.Play("IdleLeft");
-			} else anim.Play("Idle");
-		}
-		else if (sprite == 1)
-		{
 			anim.Play("WalkLeft");
 		}
-		else if (sprite == 2)
+		else if (sprite == 3)
 		{
 			anim.Play("Walk");
 		}

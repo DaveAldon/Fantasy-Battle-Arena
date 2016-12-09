@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 public class PlayerNetwork : NetworkBehaviour
 {
 	[SyncVar] private Vector2 SyncedPosition;
-
 	[SerializeField] Transform PlayerTransform;
 	[SerializeField] float PlayerSyncRate = 15f;
 

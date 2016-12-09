@@ -8,8 +8,12 @@ public class TeamManager : NetworkManager
 	{
 		playerNumber ++ ;
 		var player = (GameObject)GameObject.Instantiate(playerPrefab, new Vector2(0,0) , Quaternion.identity);
-		if (playerNumber == 1 ) { player.GetComponent<Shooting>().team = 1 ; }
-		if (playerNumber == 2 ) { player.GetComponent<Shooting>().team = 2 ; }
+		if (playerNumber == 1 ) { 
+			player.GetComponent<Shooting>().team = 1 ; 
+		}
+		if (playerNumber == 2 ) { 
+			player.GetComponent<Shooting>().team = 2 ; 
+		}
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 	}
 }
