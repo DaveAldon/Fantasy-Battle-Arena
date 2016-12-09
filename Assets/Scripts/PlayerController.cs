@@ -4,16 +4,15 @@ using UnityEngine.Networking;
  public class PlayerController : NetworkBehaviour {
  
      public float speed =8.0f;
-//     private string axisName = "Horizontal";
      public Animator anim;
-
 	 private int currentState = 0;
-
 	 public int direction;
-
-	 //private Vector2 m_Move;
-     private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
- 
+	 public bool isLeft;
+	 public bool isRight;
+	 public bool isIdle;
+	 public bool lastFacedLeft;
+     private bool m_Jump;   
+	  
      // Use this for initialization
      void Start () {
          anim = gameObject.GetComponent<Animator> ();
@@ -26,16 +25,13 @@ using UnityEngine.Networking;
 			if (!m_Jump)
 			{
 				m_Jump = Input.GetKeyDown(KeyCode.Space);
-				//currentState = 2;
 			}
 		}
 
 		// This is executed on the sever, and results in a RPC on the client
 		if (hasAuthority) {
 			CmdMove(direction, m_Jump);
-			CmdSetAnim();
 		}
-		//UpdateAnimator(currentState);
 	}
 
 	private void FixedUpdate() {
@@ -44,39 +40,38 @@ using UnityEngine.Networking;
 			if(Input.GetKey(KeyCode.A)) {
 				direction = -1;
 				currentState = 1;
+				isLeft = true;
+				isRight = false;
+				isIdle = false;
+				lastFacedLeft = true;
 			}
 			if(Input.GetKey(KeyCode.D)) {
+				GetComponent<SpriteRenderer>().flipX = false;
 				direction = 1;
-				currentState = 1;
+				currentState = 2;
+				isLeft = false;
+				isRight = true;
+				isIdle = false;
+				lastFacedLeft = false;
 			}
 			if(Input.GetKey(KeyCode.Space)) {
-				currentState = 2;
+				currentState = 3;
 			}
 			if((Input.GetKey(KeyCode.A) == false) && (Input.GetKey(KeyCode.D) == false)) {
 				direction = 0;
 				currentState = 0;
+				isIdle = true;
+				isLeft = false;
+				isRight = false;
 			}
+
+       		CmdSpriteChange(currentState);
+    		SpriteChange(currentState);
 
 			m_Jump = false;
 
 			Move(direction, m_Jump);
 		}
-	}
-
-	[Command]
-	public void CmdSetAnim()
-	{
-		if(!isServer)
-		{
-			UpdateAnimator(currentState);
-		}
-		RpcSetAnim();
-	}
-
-	[ClientRpc]
-	public void RpcSetAnim()
-	{
-		UpdateAnimator(currentState);
 	}
 
 	[Command]
@@ -98,32 +93,53 @@ using UnityEngine.Networking;
 
 	public void Move(int dir, bool jump)
 	{
-		//if (move.magnitude > 1f) move.Normalize();
-
 		Vector2 newScale = transform.localScale;
                  newScale.x = 1.0f;
                  transform.localScale = newScale;  
 
 		transform.position += transform.right * dir * speed * Time.deltaTime;
-		//move = transform.InverseTransformDirection(move);
-
-		// send input and other state parameters to the animator
-		//UpdateAnimator(currentState);
 	}
-	void UpdateAnimator(int state) {
-		switch(state) {
-			case 0:
-				anim.SetFloat("Speed", Mathf.Abs(direction));
-				break;
-			case 1:
-				anim.SetFloat("Speed", Mathf.Abs(direction));
-				break;
-			case 2:
-				anim.SetTrigger("Jump");
-				break;
-			default:
-                anim.SetFloat("Speed", Mathf.Abs(direction));
-                break;
+
+	[Command]
+	public void CmdSpriteChange(int sprite)
+	{
+		RpcSpriteChange(sprite);
+	}
+
+	[ClientRpc]
+	void RpcSpriteChange(int sprite)
+	{
+		if (sprite == 0)
+		{
+			if(lastFacedLeft) {
+			anim.Play("IdleLeft");
+			} else anim.Play("Idle");
+		}
+		else if (sprite == 1)
+		{
+			anim.Play("WalkLeft");
+		}
+		else if (sprite == 2)
+		{
+			anim.Play("Walk");
+		}
+	}
+
+	void SpriteChange(int sprite)
+	{
+		if (sprite == 0)
+		{
+			if(lastFacedLeft) {
+			anim.Play("IdleLeft");
+			} else anim.Play("Idle");
+		}
+		else if (sprite == 1)
+		{
+			anim.Play("WalkLeft");
+		}
+		else if (sprite == 2)
+		{
+			anim.Play("Walk");
 		}
 	}
  }
