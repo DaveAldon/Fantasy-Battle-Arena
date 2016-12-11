@@ -1,21 +1,27 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
  public class PlayerController : NetworkBehaviour {
  
-     public float speed =8.0f;
-     public Animator anim;
-	 private int currentState = 0;
-	 public int direction = 1;
-	 public bool lastFacedLeft;
-     private bool m_Jump;   
-	  
-     // Use this for initialization
-     void Start () {
+    public float speed =8.0f;
+    public Animator anim;
+	private int currentState = 0;
+	public int direction = 1;
+	public bool lastFacedLeft;
+    private bool m_Jump;  
+    public string myUsername;
+    public Text publicUsername;
+
+    public RectTransform healthBar;
+
+    void Start() {
         anim = gameObject.GetComponent<Animator> ();
 
 		if (isLocalPlayer) { //if I am the owner of this prefab
-		Camera.main.GetComponent<CameraFollow>().target = transform;
+			Camera.main.GetComponent<CameraFollow>().target = transform;
+			myUsername = Globals.username;
+			publicUsername.text = myUsername;
     	}
      }
 
@@ -31,6 +37,7 @@ using UnityEngine.Networking;
 
 		// This is executed on the sever, and results in a RPC on the client
 		if (hasAuthority) {
+			CmdSetName(myUsername); //This needs to be set once on connect, not every frame. But at least it works currently
 			CmdMove(direction, m_Jump);
 		}
 	}
@@ -75,6 +82,20 @@ using UnityEngine.Networking;
 			Move(direction, m_Jump);
 		}
 	}
+
+	[Command]
+	void CmdSetName(string username) {
+		RpcSetName(username);
+	}
+
+	[ClientRpc]
+    void RpcSetName(string name)
+    {
+        if (isLocalPlayer)
+			return;
+           
+		publicUsername.text = name;
+    }
 
 	[Command]
 	void CmdMove(int dir, bool jump)

@@ -10,9 +10,4 @@ public class MainMenu : MonoBehaviour {
 		welcomeMessage = welcomeMessage.GetComponent<Text> ();
 		welcomeMessage.text = "Welcome " + Globals.username +"!";
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
