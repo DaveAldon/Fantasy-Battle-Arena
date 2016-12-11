@@ -6,7 +6,7 @@ using UnityEngine.Networking;
      public float speed =8.0f;
      public Animator anim;
 	 private int currentState = 0;
-	 public int direction;
+	 public int direction = 1;
 	 public bool lastFacedLeft;
      private bool m_Jump;   
 	  
@@ -37,15 +37,7 @@ using UnityEngine.Networking;
 
 	private void FixedUpdate() {
 		if(isLocalPlayer) {
-			if((Input.GetKey(KeyCode.A) == false) && (Input.GetKey(KeyCode.D) == false)) {
-				direction = 0;
-				if(lastFacedLeft) {
-					currentState = 0;
-				} else {
-					currentState = 1;
-				}
-			}
-			else if(Input.GetKey(KeyCode.A)) {
+			if(Input.GetKey(KeyCode.A)) {
 				direction = -1;
 				currentState = 2;
 				lastFacedLeft = true;
@@ -57,6 +49,23 @@ using UnityEngine.Networking;
 			}
 			else if(Input.GetKey(KeyCode.Space)) {
 				currentState = 3;
+			}
+			else {
+				direction = 0;
+				if(lastFacedLeft) {
+					currentState = 0;
+				} else {
+					currentState = 1;
+				}
+			}
+
+			//We seperate this command from the movement inputs because we want to be able to attack while moving
+			if (Input.GetKeyDown(KeyCode.LeftShift))
+			{
+				if(lastFacedLeft) {
+					GetComponent<Shooting>().Fire(-1);
+				}
+				else GetComponent<Shooting>().Fire(1);
 			}
 
        		CmdSpriteChange(currentState);

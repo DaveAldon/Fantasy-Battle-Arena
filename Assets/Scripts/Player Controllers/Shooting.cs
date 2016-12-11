@@ -8,7 +8,6 @@ public class Shooting : NetworkBehaviour
 	public Rigidbody2D m_Shell;                 // Prefab of the shell.
 	public Transform m_FireTransform;         // A child of the player where the bullets are spawned.
 	private float m_CurrentLaunchForce = 15f;
-	public float direction = 1;
 
 	[SyncVar]
 	public int m_localID;
@@ -21,6 +20,7 @@ public class Shooting : NetworkBehaviour
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
 	}
 
+	/*
 	[ClientCallback]
 	private void Update()
 	{
@@ -42,14 +42,15 @@ public class Shooting : NetworkBehaviour
 			Fire();
 		}
 	}
+	*/
 
-	private void Fire()
+	public void Fire(int direction)
 	{
-		CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_FireTransform.right, m_FireTransform.position, m_FireTransform.rotation);
+		CmdFire(m_Rigidbody2D.velocity, m_CurrentLaunchForce, m_FireTransform.right, m_FireTransform.position, m_FireTransform.rotation, direction);
 	}
 
 	[Command]
-	private void CmdFire(Vector2 rigidbodyVelocity, float launchForce, Vector2 right, Vector2 position, Quaternion rotation)
+	private void CmdFire(Vector2 rigidbodyVelocity, float launchForce, Vector2 right, Vector2 position, Quaternion rotation, int direction)
 	{
 		// Create an instance of the shell and store a reference to it's rigidbody.
 		Rigidbody2D shellInstance =
