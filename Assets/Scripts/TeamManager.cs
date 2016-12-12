@@ -3,17 +3,17 @@ using UnityEngine.Networking ;
  
 public class TeamManager : NetworkManager
 {
-	int playerNumber = 0;
+	public int playerNumber = 0;
+	
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
 	{
+		Debug.Log("ass");
 		playerNumber ++ ;
 		var player = (GameObject)GameObject.Instantiate(playerPrefab, new Vector2(0,0) , Quaternion.identity);
-		if (playerNumber == 1 ) { 
-			player.GetComponent<Shooting>().team = 1 ; 
-		}
-		if (playerNumber == 2 ) { 
-			player.GetComponent<Shooting>().team = 2 ; 
-		}
+
+		player.GetComponent<Shooting>().team = playerNumber;
+		
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 	}
+	
 }

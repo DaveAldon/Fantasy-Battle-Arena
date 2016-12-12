@@ -76,11 +76,11 @@ public class PlayFabManager : MonoBehaviour {
 	}
 
 	void LoadScene() {
-		SceneManager.LoadScene ("Menu", LoadSceneMode.Single);
-	}
-
-	// Update is called once per frame
-	void Update () {
-	
+		SceneManager.LoadScene("Menu");
+		/*
+		var CanvasObject = GameObject.Find("Canvas");
+		GetComponent<NetworkManager>().enabled = true;
+		CanvasObject.GetComponent<Canvas> ().enabled = false;
+		*/
 	}
 }

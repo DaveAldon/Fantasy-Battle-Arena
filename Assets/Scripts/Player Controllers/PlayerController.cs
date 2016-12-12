@@ -10,19 +10,24 @@ using UnityEngine.UI;
 	public int direction = 1;
 	public bool lastFacedLeft;
     private bool m_Jump;  
-    public string myUsername;
+   
+   [SyncVar]
+	public string myUsername;
     public Text publicUsername;
 
     public RectTransform healthBar;
 
     void Start() {
+
         anim = gameObject.GetComponent<Animator> ();
 
 		if (isLocalPlayer) { //if I am the owner of this prefab
 			Camera.main.GetComponent<CameraFollow>().target = transform;
 			myUsername = Globals.username;
+			GetComponent<Shooting>().ownerName = myUsername;
 			publicUsername.text = myUsername;
     	}
+		//this.name = publicUsername.text;
      }
 
 	private void Update()
@@ -70,9 +75,9 @@ using UnityEngine.UI;
 			if (Input.GetKeyDown(KeyCode.LeftShift))
 			{
 				if(lastFacedLeft) {
-					GetComponent<Shooting>().Fire(-1);
+					GetComponent<Shooting>().Fire(-1, GetComponent<UsernameSync>().myUsername);
 				}
-				else GetComponent<Shooting>().Fire(1);
+				else GetComponent<Shooting>().Fire(1, GetComponent<UsernameSync>().myUsername);
 			}
 
        		CmdSpriteChange(currentState);
