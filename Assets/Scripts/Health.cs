@@ -4,24 +4,18 @@ using UnityEngine.Networking;
 public class Health : NetworkBehaviour {
 
     public const int maxHealth = 100;
-
-    [SyncVar(hook = "OnChangeHealth")]
+    [SyncVar(hook = "OnChangeHealth")] //If currentHealth changes, dump its contents into the function called "OnChangeHealth"
     public int currentHealth = maxHealth;
-
     public RectTransform healthBar;
 
     public void TakeDamage(int amount)
     {
-        if (!isServer)
-            return;
-        
+        if (!isServer) return;
         currentHealth -= amount;
         if (currentHealth <= 0)
         {
             currentHealth = maxHealth;
-
-            // called on the Server, but invoked on the Clients
-            RpcRespawn();
+            RpcRespawn(); // called on the Server, but invoked on the Clients
         }
     }
 
@@ -35,7 +29,7 @@ public class Health : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            // move back to zero location
+            //Move back to a respawn location
             transform.position = Vector2.zero;
         }
     }

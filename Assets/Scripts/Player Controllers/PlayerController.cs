@@ -1,20 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
  public class PlayerController : NetworkBehaviour {
  
-    public float speed =8.0f;
+    public float speed = 8.0f; //Walk speed
     public Animator anim;
-	private int currentState = 0;
-	public int direction = 1;
-	public bool lastFacedLeft;
-    private bool m_Jump;  
-   
-   [SyncVar]
-	public string myUsername;
-    public Text publicUsername;
-
+	private int currentState = 0; //State integer used to determine all animations
+	public bool lastFacedLeft; //Used for determining which idle state to use
+	public int direction = 1; // -1/0/1 values for determining projectile firing direction
+    private bool m_Jump; //Unused until jumping is implemented
     public RectTransform healthBar;
 
     void Start() {
@@ -23,11 +17,7 @@ using UnityEngine.UI;
 
 		if (isLocalPlayer) { //if I am the owner of this prefab
 			Camera.main.GetComponent<CameraFollow>().target = transform;
-			myUsername = Globals.username;
-			GetComponent<Shooting>().ownerName = myUsername;
-			publicUsername.text = myUsername;
     	}
-		//this.name = publicUsername.text;
      }
 
 	private void Update()
@@ -42,7 +32,6 @@ using UnityEngine.UI;
 
 		// This is executed on the sever, and results in a RPC on the client
 		if (hasAuthority) {
-			CmdSetName(myUsername); //This needs to be set once on connect, not every frame. But at least it works currently
 			CmdMove(direction, m_Jump);
 		}
 	}
@@ -80,28 +69,13 @@ using UnityEngine.UI;
 				else GetComponent<Shooting>().Fire(1, GetComponent<UsernameSync>().myUsername);
 			}
 
-       		CmdSpriteChange(currentState);
-
 			m_Jump = false;
-
-			Move(direction, m_Jump);
+			CmdSpriteChange(currentState); //Send current animation state to state syncing handlers
+			Move(direction, m_Jump); //Send movement information to syncing handlers. We tell the server we want to move, we don't move ourselves.
 		}
 	}
 
-	[Command]
-	void CmdSetName(string username) {
-		RpcSetName(username);
-	}
-
-	[ClientRpc]
-    void RpcSetName(string name)
-    {
-        if (isLocalPlayer)
-			return;
-           
-		publicUsername.text = name;
-    }
-
+	//We tell the server that we want to move, and the server tells all of the clients
 	[Command]
 	void CmdMove(int dir, bool jump)
 	{
@@ -111,29 +85,29 @@ using UnityEngine.UI;
 	[ClientRpc]
 	void RpcMove(int dir, bool jump)
 	{
-		if (isLocalPlayer)
-			return;
-
+		if (isLocalPlayer) return;
 		direction = dir;
 		m_Jump = jump;
 		Move(dir, jump);
 	}
 
+	//After the server updates all of the clients (including us), then our transform is updated
 	public void Move(int dir, bool jump)
 	{
 		Vector2 newScale = transform.localScale;
-                 newScale.x = 1.0f;
-                 transform.localScale = newScale;  
-
+                newScale.x = 1.0f;
+                transform.localScale = newScale;  
 		transform.position += transform.right * dir * speed * Time.deltaTime;
 	}
 
+	//Runs the animation state handler on all clients
 	[Command]
 	public void CmdSpriteChange(int sprite)
 	{
 		RpcSpriteChange(sprite);
 	}
 
+	//Animation state handlers. This information is sent to clients to that they can play the correct animations for each other.
 	[ClientRpc]
 	void RpcSpriteChange(int sprite)
 	{
