@@ -20,8 +20,4 @@ public class GameStats : NetworkBehaviour {
 		if(teamNumber == 1) return Team1KillCount;
 		else return Team2KillCount;
 	}
-
-	public void updateTeam2KillCount(int kill) {
-		Team2KillCount += kill;
-	}
 }

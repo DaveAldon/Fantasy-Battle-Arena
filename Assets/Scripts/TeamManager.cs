@@ -9,14 +9,18 @@ public class TeamManager : NetworkManager
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
 	{
 		playerNumber ++ ;
+		if(playerNumber > 2) {
+			playerNumber = 1;
+		}
 		var player = (GameObject)GameObject.Instantiate(playerPrefab, new Vector2(0,0) , Quaternion.identity);
 		player.GetComponent<PlayerStats>().updateTeam(playerNumber);
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-		StartCoroutine(GameObjectName(player));
+		StartCoroutine(GameObjectProperties(player));
 	}
 
-	IEnumerator GameObjectName(GameObject player) {
+	IEnumerator GameObjectProperties(GameObject player) {
         yield return new WaitForSeconds(1.0f);
 		player.name = player.GetComponent<UsernameSync>().myUsername;
+		player.GetComponent<PlayerStats>().updateTeam(playerNumber);
 	}
 }

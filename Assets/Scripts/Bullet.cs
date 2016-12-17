@@ -3,8 +3,9 @@ using UnityEngine.Networking;
 
 public class Bullet : NetworkBehaviour {
     
-    [SyncVar]
+    [SyncVarAttribute]
     public string ownerName;
+    [SyncVarAttribute]
     public int ownerTeam;
 
     void OnTriggerEnter2D(Collider2D coll)

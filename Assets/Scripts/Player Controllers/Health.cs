@@ -13,12 +13,15 @@ public class Health : NetworkBehaviour {
 
     public void TakeDamage(int amount)
     {
-       // if (!isServer) return;
+        if (!isServer) return;
         currentHealth -= amount;
         if (currentHealth <= 0)
         {
             currentHealth = maxHealth;
             RpcRespawn(); // called on the Server, but invoked on the Clients
+            GetComponent<PlayerStats>().updateDeaths(1);
+            GameObject.Find(GetComponent<PlayerStats>().getLastHit()).GetComponent<PlayerStats>().updateKills(1);
+            CmdDiedSoUpdateTeamKills(GameObject.Find(GetComponent<PlayerStats>().getLastHit()).GetComponent<PlayerStats>().getTeam());
         }
     }
 
@@ -32,16 +35,18 @@ public class Health : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            GetComponent<PlayerStats>().updateDeaths(1);
-            GameObject.Find(GetComponent<PlayerStats>().getLastHit()).GetComponent<PlayerStats>().updateKills(1);
             //Move back to a respawn location
             transform.position = Vector2.zero;
-
-            RpcDiedSoUpdateTeamKills(GetComponent<PlayerStats>().getWhatTeamHitMe());
         }
     }
 
-    [ClientRpc]
+    [Command]
+    void CmdDiedSoUpdateTeamKills(int team)
+    {
+	    RpcDiedSoUpdateTeamKills(team);
+    }
+
+    [ClientRpcAttribute]
     void RpcDiedSoUpdateTeamKills(int team)
     {
 	    GameObject.Find("GameStats").GetComponent<GameStats>().updateTeamKillCount(team, 1);

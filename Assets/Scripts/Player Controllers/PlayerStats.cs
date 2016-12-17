@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Networking;
+﻿using UnityEngine.Networking;
 
 public class PlayerStats : NetworkBehaviour {
 
@@ -7,7 +6,9 @@ public class PlayerStats : NetworkBehaviour {
 	public int kills = 0;
 	[SyncVarAttribute]
 	public int deaths = 0;
+	[SyncVarAttribute]
 	public int team;
+	[SyncVarAttribute]
 	public string whoLastHitMe;
 	public int whatTeamLastHitMe;
 
