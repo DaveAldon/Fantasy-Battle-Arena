@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking ;
+using System.Collections;
  
 public class TeamManager : NetworkManager
 {
@@ -9,8 +10,13 @@ public class TeamManager : NetworkManager
 	{
 		playerNumber ++ ;
 		var player = (GameObject)GameObject.Instantiate(playerPrefab, new Vector2(0,0) , Quaternion.identity);
-		player.GetComponent<Shooting>().team = playerNumber;
+		player.GetComponent<PlayerStats>().updateTeam(playerNumber);
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+		StartCoroutine(GameObjectName(player));
 	}
-	
+
+	IEnumerator GameObjectName(GameObject player) {
+        yield return new WaitForSeconds(1.0f);
+		player.name = player.GetComponent<UsernameSync>().myUsername;
+	}
 }

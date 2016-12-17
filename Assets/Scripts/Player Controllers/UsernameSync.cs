@@ -1,5 +1,6 @@
 ﻿using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine;
 
 public class UsernameSync : NetworkBehaviour {
 
@@ -13,6 +14,8 @@ public class UsernameSync : NetworkBehaviour {
 		//Initialization of the player's username string and visible text box
 		myUsername = Globals.username;
 		publicUsername.text = myUsername;
+		gameObject.name = myUsername;
+		CmdGameObjectName(gameObject, myUsername);
 	}
 
 	void Update() {
@@ -21,7 +24,26 @@ public class UsernameSync : NetworkBehaviour {
 		if(!hasAuthority) {
 			myUsername = publicUsername.text;
 		}
+		if (!isLocalPlayer) return;
 		CmdSetName(publicUsername.text);
+		CmdGameObjectName(gameObject, myUsername);
+	}
+
+	void LateUpdate() {
+		if (isLocalPlayer) {
+         //CmdGameObjectName(gameObject, myUsername);
+     }
+	}
+
+	[Command]
+	void CmdGameObjectName(GameObject me, string username) {
+		RpcName(me, username);
+	}
+
+	[ClientRpc]
+	void RpcName(GameObject me, string username) {
+		if (isLocalPlayer) return;
+		me.name = username;
 	}
 
 	[Command]

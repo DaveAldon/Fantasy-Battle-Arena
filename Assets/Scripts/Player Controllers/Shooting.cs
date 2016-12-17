@@ -3,7 +3,6 @@ using UnityEngine.Networking;
 
 public class Shooting : NetworkBehaviour
 {
-	public int team;
 	public int m_PlayerNumber = 1; // Used to identify the different players.
 	public Rigidbody2D m_Shell; // Prefab of the shell.
 	public Transform m_FireTransform; // A child of the player where the bullets are spawned.
@@ -36,7 +35,7 @@ public class Shooting : NetworkBehaviour
 		// Create an instance of the shell and store a reference to its rigidbody. Additially, its team and owner affiliations are set.
 		Rigidbody2D shellInstance =
 			Instantiate(m_Shell, position, rotation) as Rigidbody2D;
-			shellInstance.GetComponent<Bullet>().ownerTeam = team;
+			shellInstance.GetComponent<Bullet>().ownerTeam = gameObject.GetComponent<PlayerStats>().getTeam();
 			shellInstance.GetComponent<Bullet>().ownerName = sourceUsername;
 			
 		// Create a velocity that is the sender's velocity, and the launch force in a forward direction.

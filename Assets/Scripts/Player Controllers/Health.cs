@@ -8,9 +8,12 @@ public class Health : NetworkBehaviour {
     public int currentHealth = maxHealth;
     public RectTransform healthBar;
 
+    [SyncVar]
+    public int whichTeamDied = 0;
+
     public void TakeDamage(int amount)
     {
-        if (!isServer) return;
+       // if (!isServer) return;
         currentHealth -= amount;
         if (currentHealth <= 0)
         {
@@ -29,8 +32,18 @@ public class Health : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
+            GetComponent<PlayerStats>().updateDeaths(1);
+            GameObject.Find(GetComponent<PlayerStats>().getLastHit()).GetComponent<PlayerStats>().updateKills(1);
             //Move back to a respawn location
             transform.position = Vector2.zero;
+
+            RpcDiedSoUpdateTeamKills(GetComponent<PlayerStats>().getWhatTeamHitMe());
         }
+    }
+
+    [ClientRpc]
+    void RpcDiedSoUpdateTeamKills(int team)
+    {
+	    GameObject.Find("GameStats").GetComponent<GameStats>().updateTeamKillCount(team, 1);
     }
 }
