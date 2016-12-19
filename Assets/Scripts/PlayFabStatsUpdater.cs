@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
-using PlayFab.Internal;
 using System.Collections.Generic;
 
 public class PlayFabStatsUpdater : MonoBehaviour {
@@ -11,24 +10,24 @@ public class PlayFabStatsUpdater : MonoBehaviour {
 	public int killsOld;
 	public Texture btnTexture;
 
-	public static Dictionary<string, Dictionary<string, int>> characterStatistics = new Dictionary<string, Dictionary<string, int>>();
-	public static List<CharacterResult> playerCharacters = new List<CharacterResult>();
-
 	void Start () {
-		//InvokeRepeating("SavePlayerState", 10, 10);
+		kills = 0;
+		killsOld = 0;
+		GetStatistics();
+		InvokeRepeating("updateValues", 10, 10);
 	}
 
+	/*
 	void OnGUI() {
 		 if (GUI.Button(new Rect(10, 10, 50, 50), btnTexture))
 		 updateValues();
 	}
+	*/
 
 	void updateValues() {
-		foreach(string playerName in GetComponent<GameStats>().getPlayersLoggedIn()) {
-			var player = GameObject.Find(playerName).GetComponent<PlayerStats>();
-			username = playerName;
-			kills = player.getKills();
-
+		kills = GetComponent<PlayerStats>().getKills();
+		if(kills != killsOld) {
+			username = gameObject.name;
 			UpdateStatistics();
 		}
 	}
@@ -44,27 +43,33 @@ public class PlayFabStatsUpdater : MonoBehaviour {
 		var request = new UpdatePlayerStatisticsRequest {
 			Statistics = stat			
 		};
-	
+
 		PlayFab.PlayFabClientAPI.UpdatePlayerStatistics(request, StatResult, OnPlayFabError);
+		killsOld = kills;
     }
 
+	void GetStatistics() {
+		List<string> stat = new List<string>();
+		stat.Add("Kills");
+		var request = new GetPlayerStatisticsRequest {
+			StatisticNames = stat
+		};
+		PlayFab.PlayFabClientAPI.GetPlayerStatistics(request, GetStatResult, OnPlayFabError);
+	}
+
+	void GetStatResult(GetPlayerStatisticsResult result) {
+		GetComponent<PlayerStats>().updateKills(result.Statistics[0].Value);
+	}
+	
 	void StatResult(UpdatePlayerStatisticsResult result) {
 		
 	}
 
 	public void onDestroy() {
-		//SavePlayerState();
+		updateValues();
 	}
 
 	void OnPlayFabError(PlayFabError error) {
 		Debug.Log("Error: " + error.ErrorMessage);
-	}
-
-	private void StatsUpdated(PlayFab.ClientModels.UpdateCharacterStatisticsResult result) {
-		Debug.Log("Stats Updated");
-	}
-
-	private void PlayerDataSaved(UpdateUserDataResult result) {
-		Debug.Log("Player data saved");
 	}
 }
