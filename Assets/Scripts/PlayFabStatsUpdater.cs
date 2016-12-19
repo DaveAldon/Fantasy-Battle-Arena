@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
+using PlayFab.Internal;
 using System.Collections.Generic;
 
 public class PlayFabStatsUpdater : MonoBehaviour {
@@ -8,47 +9,51 @@ public class PlayFabStatsUpdater : MonoBehaviour {
 	public string username;
 	public int kills;
 	public int killsOld;
+	public Texture btnTexture;
+
+	public static Dictionary<string, Dictionary<string, int>> characterStatistics = new Dictionary<string, Dictionary<string, int>>();
+	public static List<CharacterResult> playerCharacters = new List<CharacterResult>();
 
 	void Start () {
-		username = Globals.username;
-
-		GetUserDataRequest request = new GetUserDataRequest();
-		PlayFabClientAPI.GetUserData(request, LoadPlayerData, OnPlayFabError);
-		InvokeRepeating("SavePlayerState", 10, 10);
+		//InvokeRepeating("SavePlayerState", 10, 10);
 	}
 
-	private void LoadPlayerData(GetUserDataResult result) {
-		Debug.Log("Player data loaded.");
-		if(result.Data.ContainsKey("Kills")) {
-			Globals.TotalKills = int.Parse(result.Data["Kills"].Value);
-		}
-		else Globals.TotalKills = 0;
-		killsOld = Globals.TotalKills;
+	void OnGUI() {
+		 if (GUI.Button(new Rect(10, 10, 50, 50), btnTexture))
+		 updateValues();
 	}
 
-	private void SavePlayerState() {
-		if(Globals.TotalKills != killsOld) {
-			Debug.Log("Saving Player Data...");
-			UpdateUserDataRequest request = new UpdateUserDataRequest();
-			request.Data = new Dictionary<string, string>();
-			request.Data.Add("Kills", Globals.TotalKills.ToString());
-			PlayFabClientAPI.UpdateUserData(request, PlayerDataSaved, OnPlayFabError);
+	void updateValues() {
+		foreach(string playerName in GetComponent<GameStats>().getPlayersLoggedIn()) {
+			var player = GameObject.Find(playerName).GetComponent<PlayerStats>();
+			username = playerName;
+			kills = player.getKills();
 
-			Dictionary<string, int> stats = new Dictionary<string, int>();
-			stats.Add("Kills", Globals.TotalKills);
-			storeStats(stats);
+			UpdateStatistics();
 		}
 	}
 
-	public void storeStats(Dictionary<string, int> stats) {
-		PlayFab.ClientModels.UpdateCharacterStatisticsRequest request = new PlayFab.ClientModels.UpdateCharacterStatisticsRequest();
-		request.CharacterStatistics = stats;
+	public void UpdateStatistics()
+    {
+		List<StatisticUpdate> stat = new List<StatisticUpdate>();
+		StatisticUpdate item = new StatisticUpdate();
+		item.StatisticName = "Kills";
+		item.Value = kills;
+		stat.Add(item);
+
+		var request = new UpdatePlayerStatisticsRequest {
+			Statistics = stat			
+		};
+	
+		PlayFab.PlayFabClientAPI.UpdatePlayerStatistics(request, StatResult, OnPlayFabError);
+    }
+
+	void StatResult(UpdatePlayerStatisticsResult result) {
 		
-		PlayFabClientAPI.UpdateCharacterStatistics(request, StatsUpdated, OnPlayFabError);
 	}
 
 	public void onDestroy() {
-		SavePlayerState();
+		//SavePlayerState();
 	}
 
 	void OnPlayFabError(PlayFabError error) {
@@ -62,6 +67,4 @@ public class PlayFabStatsUpdater : MonoBehaviour {
 	private void PlayerDataSaved(UpdateUserDataResult result) {
 		Debug.Log("Player data saved");
 	}
-
-
 }

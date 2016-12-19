@@ -22,5 +22,6 @@ public class TeamManager : NetworkManager
         yield return new WaitForSeconds(1.0f);
 		player.name = player.GetComponent<UsernameSync>().myUsername;
 		player.GetComponent<PlayerStats>().updateTeam(playerNumber);
+		GameObject.Find("GameStats").GetComponent<GameStats>().CmdUpdatePlayersLoggedIn(player.GetComponent<UsernameSync>().myUsername);
 	}
 }

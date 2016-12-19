@@ -1,4 +1,5 @@
 ﻿using UnityEngine.Networking;
+using System.Collections.Generic;
 
 public class GameStats : NetworkBehaviour {
 
@@ -6,7 +7,23 @@ public class GameStats : NetworkBehaviour {
 	public int Team1KillCount = 0;
 	[SyncVarAttribute]
 	public int Team2KillCount = 0;
+	public List<string> PlayersLoggedIn = new List<string>();
 
+	public List<string> getPlayersLoggedIn() {
+		return PlayersLoggedIn;
+	}
+
+	[CommandAttribute]
+	public void CmdUpdatePlayersLoggedIn(string username) {
+		RpcUpdatePlayersLoggedIn(username);
+	}
+
+	[ClientRpc]
+    void RpcUpdatePlayersLoggedIn(string username)
+    {
+        PlayersLoggedIn.Add(username);
+    }
+	
 	public int getTeam1KillCount() {
 		return Team1KillCount;
 	}

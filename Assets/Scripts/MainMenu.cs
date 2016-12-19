@@ -5,9 +5,8 @@ public class MainMenu : MonoBehaviour {
 
 	public Text welcomeMessage;
 
-	// Use this for initialization
 	void Start () {
 		welcomeMessage = welcomeMessage.GetComponent<Text> ();
-		welcomeMessage.text = "Welcome " + Globals.username +"!";
+		welcomeMessage.text = "Welcome " + Globals.username +"!";	
 	}
 }

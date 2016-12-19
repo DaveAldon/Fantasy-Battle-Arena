@@ -44,6 +44,6 @@ public class Shooting : NetworkBehaviour
 		shellInstance.velocity = velocity;
 
 		NetworkServer.Spawn(shellInstance.gameObject);
-		//Destroy(shellInstance.gameObject, 2.0f); //Destory the bullet after 2 seconds
+		Destroy(shellInstance.gameObject, 2.0f); //Destory the bullet after 2 seconds
 	}
 }
