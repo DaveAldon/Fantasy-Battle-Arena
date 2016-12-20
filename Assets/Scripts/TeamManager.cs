@@ -13,7 +13,7 @@ public class TeamManager : NetworkManager
 	{
 		//Put this in a music class later
 		AudioSource.PlayClipAtPoint(fightSound, gameObject.transform.position);
-		
+
 		playerNumber ++ ;
 		if(playerNumber > 2) {
 			playerNumber = 1;
@@ -25,7 +25,7 @@ public class TeamManager : NetworkManager
 			NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 			StartCoroutine(GameObjectProperties(player));
 		}
-		else if(playerNumber == 2) {
+		else {
 			var player = (GameObject)GameObject.Instantiate(playerPrefab, GameObject.Find("Team2Spawn").GetComponent<Transform>().position , Quaternion.identity);
 			player.GetComponent<PlayerStats>().updateTeam(playerNumber);
 			NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);

@@ -33,10 +33,6 @@ public class GameStats : NetworkBehaviour {
 	public void updateTeamKillCount(int teamNumber, int kill) {
 		if(teamNumber == 1) Team1KillCount += kill;
 		else if(teamNumber == 2) Team2KillCount += kill;
-
-		if(Team1KillCount > killsToWin) GetComponent<MatchManager>().ReachedWinFirst(1);
-		if(Team2KillCount > killsToWin) GetComponent<MatchManager>().ReachedWinFirst(2);
-
 	}
 
 	public int getTeamKillCount(int teamNumber) {
