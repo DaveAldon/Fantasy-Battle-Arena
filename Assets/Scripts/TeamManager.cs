@@ -5,18 +5,34 @@ using System.Collections;
 public class TeamManager : NetworkManager
 {
 	public int playerNumber = 0;
+
+	//Put this in a music class later
+	public AudioClip fightSound;
 	
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
 	{
+		//Put this in a music class later
+		AudioSource.PlayClipAtPoint(fightSound, gameObject.transform.position);
+		
 		playerNumber ++ ;
 		if(playerNumber > 2) {
 			playerNumber = 1;
 		}
-		var player = (GameObject)GameObject.Instantiate(playerPrefab, new Vector2(0,0) , Quaternion.identity);
-		player.GetComponent<PlayerStats>().updateTeam(playerNumber);
-		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-		StartCoroutine(GameObjectProperties(player));
+
+		if(playerNumber == 1) {
+			var player = (GameObject)GameObject.Instantiate(playerPrefab, GameObject.Find("Team1Spawn").GetComponent<Transform>().position, Quaternion.identity);
+			player.GetComponent<PlayerStats>().updateTeam(playerNumber);
+			NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+			StartCoroutine(GameObjectProperties(player));
+		}
+		else if(playerNumber == 2) {
+			var player = (GameObject)GameObject.Instantiate(playerPrefab, GameObject.Find("Team2Spawn").GetComponent<Transform>().position , Quaternion.identity);
+			player.GetComponent<PlayerStats>().updateTeam(playerNumber);
+			NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+			StartCoroutine(GameObjectProperties(player));
+		}
 	}
+	
 
 	IEnumerator GameObjectProperties(GameObject player) {
         yield return new WaitForSeconds(1.0f);

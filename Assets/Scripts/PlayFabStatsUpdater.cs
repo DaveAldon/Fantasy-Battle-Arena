@@ -13,16 +13,13 @@ public class PlayFabStatsUpdater : MonoBehaviour {
 	void Start () {
 		kills = 0;
 		killsOld = 0;
-		GetStatistics();
+		//GetStatistics();
 		InvokeRepeating("updateValues", 10, 10);
 	}
 
-	/*
 	void OnGUI() {
-		 if (GUI.Button(new Rect(10, 10, 50, 50), btnTexture))
-		 updateValues();
+		 GUI.TextField(new Rect(10, 350, 200, 25), "Kills: " + (GetComponent<PlayerStats>().getKills()));
 	}
-	*/
 
 	void updateValues() {
 		kills = GetComponent<PlayerStats>().getKills();
